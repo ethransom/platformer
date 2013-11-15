@@ -1,0 +1,76 @@
+<html>
+<head>
+	<title>Boxen in the Woodsen</title>
+	<link rel="Shortcut Icon" href="favicon.ico">
+	<link rel="SHORTCUT ICON" href="favicon.ico">
+	<link rel="icon" type="image/ico" href="favicon.ico">
+	<script src="viewport.js"></script>
+	<script src="game.js"></script>
+	<script src="mainscript.js"></script>
+	<script src="map.js"></script>
+	<script src="blocks.js"></script>
+	<script src="units.js"></script>
+	<script src="player.js"></script>
+	<script src="level1.js"></script>
+	<script src="lib/jquery.js"></script>
+
+	<script type="text/javascript">
+	</script>
+	<style type="text/css">
+	body {
+		background-color: green;
+	}
+	div#popup {
+		display:none;
+		color: white;
+		background: rgba(200,200,200,.5);
+		/*border: 1px solid white;*/
+		width: 50%;
+		height: 40%;
+		z-index: 400;
+		position: absolute;
+		margin: 0;
+		padding:0;
+		text-align: center;
+		vertical-align: center;
+		font-size:36px;
+		top: 30%;
+		left: 25%;
+	}
+	#fps {
+		position: absolute;
+		width: 100px;
+		height: 100px;
+		text-align: right;
+		top: 0px;
+		right: 0px;
+		color: white;
+		z-index: 500;
+	}
+	#canvaswrapper {
+		background-color: black;
+	}
+	#canvas {
+		margin: 0px;
+		padding: 0px;
+		position: absolute;
+		top: 0px;
+		left: 0px;
+		background-color: black;
+	}
+	</style>
+</head>
+<body bgcolor="black">
+	<div id="popup">
+		<h1>
+			Game Over!
+		</h1>
+		<p>Refresh to try again</p>
+		<!--<input type="button" id="startover" value="Try Again" onclick="startgame();">-->
+	</div>
+	<div id="fps"></div>
+	<div id="canvaswrapper">
+		<canvas id="canvas" width="1000" height="500"></canvas>
+	</div>
+</body>
+</html>
