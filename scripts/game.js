@@ -2,6 +2,7 @@ function game(w, h) {
 	this.box = null;
 	this.map = new Map();
 	this.units = [];
+	this.ghosts = {};
 	this.player = null;
 	this.w = 0;
 	this.h = 0;
@@ -61,6 +62,9 @@ function game(w, h) {
 			this.units[u].draw(dtime, c);
 		}
 		this.player.draw(dtime, c);
+		for (var key in this.ghosts) {
+			this.ghosts[key].draw(dtime, c);
+		}
 		//preform scrolling calculations
 
 		c.restore();

@@ -4,15 +4,45 @@
 	<link rel="Shortcut Icon" href="favicon.ico">
 	<link rel="SHORTCUT ICON" href="favicon.ico">
 	<link rel="icon" type="image/ico" href="favicon.ico">
-	<script src="viewport.js"></script>
-	<script src="game.js"></script>
-	<script src="mainscript.js"></script>
-	<script src="map.js"></script>
-	<script src="blocks.js"></script>
-	<script src="units.js"></script>
-	<script src="player.js"></script>
-	<script src="level1.js"></script>
-	<script src="lib/jquery.js"></script>
+	<script src="scripts/lib/jquery.js"></script>
+	<script>
+	/* jQuery Tiny Pub/Sub - v0.7 - 10/27/2011
+	* http://benalman.com/
+	* Copyright (c) 2011 "Cowboy" Ben Alman; Licensed MIT, GPL */
+
+	// names of functions changed
+	 
+	(function($) {
+		 
+		var o = $({});
+		 
+		$.on = function() {
+			o.on.apply(o, arguments);
+		};
+		 
+		$.off = function() {
+			o.off.apply(o, arguments);
+		};
+		 
+		$.go = function() {
+			o.trigger.apply(o, arguments);
+		};
+	 
+	}(jQuery));
+	</script>
+	<script src="scripts/ghost.js"></script>
+	<script src="scripts/viewport.js"></script>
+	<script src="scripts/game.js"></script>
+	<script src="scripts/mainscript.js"></script>
+	<script src="scripts/map.js"></script>
+	<script src="scripts/sprite_sheet.js"></script>
+	<script src="scripts/blocks.js"></script>
+	<script src="scripts/units.js"></script>
+	<script src="scripts/player.js"></script>
+	<script src="scripts/level1.js"></script>
+
+	<!-- <script src="/socket.io/socket.io.js"></script> -->
+	<!-- <script src="scripts/connection.js"></script> -->
 
 	<script type="text/javascript">
 	</script>

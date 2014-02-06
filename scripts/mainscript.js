@@ -1,4 +1,5 @@
 var Game = null;
+var connection = null;
 
 var keys = {
 	down: function(e) {
@@ -22,8 +23,35 @@ var keys = {
 
 window.onload = function() {
 	$.getJSON("levels/tiled_test.json", function(data) {
-		Game.map.load(data['layers'][0]);
+		var layers = data['layers'];
 
+		var scenery_data, collision_data;
+
+		layers.forEach(function (element) {
+			if (element.name == "scenery") {
+				console.log(element);
+				scenery_data = element;
+			} else if (element.name == "entities") {
+				element['objects'].forEach(function (obj) {
+					if (obj.name == "player") {
+						console.log("PLAYER: " + obj.x + ", " + obj.y);
+						Game.player = new Player(
+							obj.x + (Game.map.blockwidth / 2),
+							obj.y + (Game.map.blockwidth / 2) - 64, 
+							Game.map.blockwidth, 
+							Game.map.blockheight
+						);
+					}
+				});
+			} else if (element.name == 'collision') {
+				collision_data = element;
+			}
+		});
+
+		Game.map.load(scenery_data);
+		Game.map.loadCollision(collision_data);
+
+		// connection.open();
 		Game.draw();
 	});
 
@@ -40,6 +68,7 @@ window.onload = function() {
 	foo.width = w;
 	foo.height = h;
 	Game = new game(w, h);
+	// connection = new Connection();
 
 	Game.map = new Map();
 

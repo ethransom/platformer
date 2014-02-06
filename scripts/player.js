@@ -4,7 +4,7 @@ Player.prototype.constructor = Player;
 
 function Player(x, y, w, h) {
 	Unit.call(this);
-	this.color = 'purple';
+	this.color = 'orange';
 	this.dy = 0;
 	this.x = x;
 	this.y = y;
@@ -12,8 +12,19 @@ function Player(x, y, w, h) {
 	this.h = 40;
 	this.gravity = 1000;
 	this.speed = 100;
-	this.thrust = -500;
+	this.thrust = -450;
 	this.maxfall = 64;
+
+	var that = this;
+	$.on('playing', function () {
+		console.log("purpling player");
+		that.color = 'purple';
+	});
+
+	$.on('spectating', function () {
+		console.log("greying player");
+		that.color = '#c3c3c3';
+	});
 }
 
 Player.prototype.draw = function(dtime, c) {
@@ -101,14 +112,26 @@ Player.prototype.draw = function(dtime, c) {
 	c.save();
 	c.translate(this.x, this.y);
 	// $('#fps').html(this.x + ", " + this.y);
-	c.fillStyle = 'purple';
+	c.fillStyle = this.color;
 	c.fillRect(-20, -20, 40, 40);
 	c.restore();
+
+	this.updateServer(dtime);
 }
 
 Player.prototype.jump = function() {
 	if (!this.airborne && !this.jumping && !this.falling) {
 		this.jumping = true;
 		this.dy = this.thrust;
+	}
+};
+
+var __lastUpdateBuildup = 0;
+Player.prototype.updateServer = function(dtime) {
+	__lastUpdateBuildup += dtime;
+
+	if (__lastUpdateBuildup > 0.250) {
+		// connection.sendUpdate(this.x, this.y);
+		__lastUpdateBuildup = 0;
 	}
 }

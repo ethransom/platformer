@@ -34,10 +34,9 @@ Map.prototype.load = function(data) {
 	for (var r = 0; r < this.h; r++) {
 		this.rows[r] = new Array(this.w);
 		for (var c = 0; c < this.w; c++) {
-			var me = this.data.shift();
-			if (me == 6)
-				Game.player = new Player((c * this.blockwidth) + (this.blockwidth / 2), (r * this.blockheight) + (this.blockwidth / 2), this.blockwidth, this.blockheight);
-			this.rows[r][c] = Block.from_sprite_code(me, c * this.blockwidth, r * this.blockheight, this.blockwidth, this.blockheight);
+			var me = 1;
+			me = this.data.shift();
+			this.rows[r][c] = Block.from_sprite_code(me - 1, c * this.blockwidth, r * this.blockheight, this.blockwidth, this.blockheight);
 		}
 	}
 	Game.h = this.rows.length;
@@ -46,3 +45,15 @@ Map.prototype.load = function(data) {
 	this.width = this.rows[0].length * this.blockwidth;
 	this.height = this.rows.length * this.blockheight;
 };
+
+Map.prototype.loadCollision = function(data) {
+	var d = data.data;
+
+	for (var r = 0; r < data.height; r++) {
+		for (var c = 0; c < data.width; c++) {
+			var me = -1;
+			me = d.shift();
+			this.rows[r][c].walkable = (me == 19);
+		}
+	}
+}

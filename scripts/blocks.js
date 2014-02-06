@@ -1,9 +1,4 @@
-﻿var tileSprites = new Image();
-var tileSpritesLoaded = false;
-tileSprites.onload = function () {
-	tileSpritesLoaded = true;
-}
-tileSprites.src = "tiles.png";
+﻿var blockSprites = new SpriteSheet('img/tiles.png', 64, 64);
 
 var properties = {
 	// air
@@ -47,16 +42,11 @@ Block.prototype.draw = function(c) {
 	if (this.hidden) return;
 	c.save();
 	c.translate(Math.floor(this.x), Math.floor(this.y));
-	if (tileSpritesLoaded) {
-		c.drawImage(tileSprites, 
-					((this.sprite_code % 5) - 1) * 64,
-					Math.floor(this.sprite_code / 5) * 64,
-					64, 64,
-					0, 0,
-					64, 64);
-	} else {
+	if (this.sprite_code == undefined) {
 		c.fillStyle = this.color;
 		c.fillRect(0, 0, this.w, this.h);
+	} else {
+		blockSprites.draw_snip(c, this.sprite_code);
 	}
 
 	c.restore();
@@ -66,8 +56,14 @@ Block.from_sprite_code = function(code, x, y, w, h) {
 	var block = new Block(x, y, w, h);
 	block.sprite_code = code;
 
-	if (properties[code.toString()] !== undefined)
-		block.walkable = properties[code.toString()].walkable;
+	// if (properties[code.toString()] !== undefined)
+		// block.walkable = properties[code.toString()].walkable;
+
+	// if ([0].indexOf(code) > -1) {
+		// block.walkable = true;
+	// }
+
+	// console.log(code + ": (" + ((block.sprite_code % 19) - 1) + ", " + Math.floor(block.sprite_code / 7) + ")");
 
 	return block;
 };
