@@ -1,6 +1,9 @@
 ﻿function Unit() {
-	Sprite.call(this);
+	Ninja.Sprite.call(this);
 }
+
+Unit.prototype = new Ninja.Sprite();
+Unit.prototype.constructor = Unit;
 
 Unit.prototype.draw = function(dtime, c) {
 	if (this.falling) {

@@ -1,0 +1,3 @@
+[submodule "ninja"]
+	path = ninja
+	url = /home/ethan/Projects/ninja

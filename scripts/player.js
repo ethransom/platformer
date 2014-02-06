@@ -25,6 +25,10 @@ function Player(x, y, w, h) {
 		console.log("greying player");
 		that.color = '#c3c3c3';
 	});
+
+	$.on('jump', function () {
+		that.jump();
+	});
 }
 
 Player.prototype.draw = function(dtime, c) {

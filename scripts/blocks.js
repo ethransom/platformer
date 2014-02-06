@@ -1,4 +1,4 @@
-﻿var blockSprites = new SpriteSheet('img/tiles.png', 64, 64);
+﻿var blockSprites = new Ninja.SpriteSheet('img/tiles.png', 64, 64);
 
 var properties = {
 	// air
@@ -28,7 +28,7 @@ var properties = {
 }
 
 function Block(x, y, w, h) {
-	Sprite.call(this);
+	Ninja.Sprite.call(this);
 	this.x = x;
 	this.y = y;
 	this.w = w;

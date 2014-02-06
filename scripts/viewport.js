@@ -1,11 +1,13 @@
-function Viewport(w, h, game) {
+function Viewport(w, h, map) {
 	this.shift_x = 0;
 	this.shift_y = 0;
 
-	this.game = game;
+	this.map = map;
 
-	this.width = w;
-	this.height = h;
+	this.width = document.body.clientWidth;
+	this.height = document.body.clientHeight;
+	// this.width = w;
+	// this.height = h;
 
 	this.draw = function(dtime, ctx) {
 		ctx.translate(Math.floor(this.shift_x), Math.floor(this.shift_y));
@@ -29,10 +31,10 @@ function Viewport(w, h, game) {
 
 
 		// prevent from showing empty space below and to the right
-		if ((this.game.map.width - (-this.shift_x + this.width)) < 0)
-			this.shift_x = -(this.game.map.width - this.width);
-		if ((this.game.map.height - (-this.shift_y + this.height)) < 0)
-			this.shift_y = -(this.game.map.height - this.height);
+		if ((this.map.width - (-this.shift_x + this.width)) < 0)
+			this.shift_x = -(this.map.width - this.width);
+		if ((this.map.height - (-this.shift_y + this.height)) < 0)
+			this.shift_y = -(this.map.height - this.height);
 
 		// prevent from showing empty space above and to the left
 		if (this.shift_x > 0) this.shift_x = 0;
