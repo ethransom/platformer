@@ -23,7 +23,8 @@ var keys = {
 };
 
 window.onload = function() {
-	$.getJSON("levels/tiled_test.json", function(data) {
+	$.getJSON("levels/tiled_test.json", {}, function(data) {
+		console.log(data);
 		var layers = data['layers'];
 
 		var scenery_data, collision_data;
@@ -66,11 +67,22 @@ window.onload = function() {
 	foo.width = w;
 	foo.height = h;
 	Game = new Ninja.Game(w, h);
+	Game.on('draw', function (dtime, c) {
+		c.fillStyle = 'black';
+		c.font = 10 + "px monospace";
+		c.textBaseline = 'hanging';
+		c.fillText("shift_x: " + this.map.viewport.shift_x, 20, 10);
+		c.fillText("shift_y: " + this.map.viewport.shift_y, 20, 20);
+		c.fillText("width: " + this.map.viewport.width, 20, 30);
+		c.fillText("height: " + this.map.viewport.height, 20, 40);
+		c.fillText("map.width: " + this.map.width, 20, 50);
+		c.fillText("map.height: " + this.map.height, 20, 60);
+		c.fillText("player.x: " + player.x, 20, 70);
+		c.fillText("player.y: " + player.y, 20, 80);
+	});
 	Game.map = new Level('fu bar');
 
 	// connection = new Connection();
-
-	// Game.map = new Map();
 
 	$(window).resize(function() {
 		var width = $(window).width();

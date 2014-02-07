@@ -7,6 +7,7 @@ app.get('/', function (req, res) {
 
 app.use('/scripts', express.static(__dirname + '/scripts'));
 app.use('/levels', express.static(__dirname + '/levels'));
+app.use('/ninja', express.static(__dirname + '/ninja'));
 app.use('/img', express.static(__dirname + '/img'));
 
 var server = require('http').Server(app);
@@ -89,4 +90,4 @@ io.sockets.on('connection', function (socket) {
   });
 });
 
-server.listen(3000);
+server.listen(3003);

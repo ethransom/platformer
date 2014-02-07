@@ -12,7 +12,7 @@ function Player(x, y, w, h) {
 	this.h = 40;
 	this.gravity = 1000;
 	this.speed = 100;
-	this.thrust = -450;
+	this.thrust = -600;
 	this.maxfall = 64;
 
 	var that = this;

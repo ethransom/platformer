@@ -9,15 +9,15 @@ function Level(url) {
 	this.ctx = this.canvas.getContext('2d');
 }
 
-Level.prototype.draw = function (dtime, ctx) {
-	Ninja.Scene.call(this, dtime, ctx);
-
-	this.viewport.center(player.x, player.y);
-	this.viewport.draw(dtime, c);
-}
-
 Level.prototype = new Ninja.Scene();
 Level.prototype.constructor = Level;
+
+Level.prototype.draw = function (dtime, ctx) {
+	this.viewport.center(player.x, player.y);
+	this.viewport.draw(dtime, ctx);
+
+	Ninja.Scene.prototype.draw.call(this, dtime, ctx);
+}
 
 Level.prototype.loc = function(x, y) {
 	var r = Math.floor(x / this.blockwidth);
