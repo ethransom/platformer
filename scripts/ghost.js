@@ -1,8 +1,12 @@
 function Ghost(id) {
-	Sprite.call(this);
+	console.log("new ghost", id);
+	Ninja.Sprite.call(this);
 	this.color = 'black';
 	this.id = id;
 }
+
+Ghost.prototype = new Ninja.Sprite();
+Ghost.prototype.constructor = Ghost;
 
 Ghost.prototype.draw = function(dtime, c) {
 	c.save();

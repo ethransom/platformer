@@ -41,6 +41,13 @@ function User(manager, id) {
     this.x = x; 
     this.y = y;
   };
+
+  this.should_update = function (x, y) {
+    return (
+      (Math.round(this.x) != Math.round(x)) ||
+      (Math.round(this.y) != Math.round(y))
+    );
+  }
 };
 
 var manager = new PlayerManager(40);
@@ -60,7 +67,11 @@ io.sockets.on('connection', function (socket) {
     console.log(players[key].id == user.id);
     if (players[key].id != user.id) {
       console.log("updating " + user.id + " about the presence of " + players[key].id);
-      socket.emit('new_connection', {'id': socket.id});
+      socket.emit('new_connection', {
+        'id': players[key].id,
+        'x': players[key].x,
+        'y': players[key].y
+      });
     }
   }
 
@@ -80,8 +91,10 @@ io.sockets.on('connection', function (socket) {
   });
 
   socket.on('update!', function(data) {
-    user.update(data.x, data.y);
-    socket.broadcast.emit('update', {'x': data.x, 'y': data.y, 'id': socket.id});
+    if (user.should_update(data.x, data.y)) {
+      user.update(data.x, data.y);
+      socket.broadcast.emit('update', {'x': data.x, 'y': data.y, 'id': socket.id});
+    }
   });
 
   socket.on('disconnect', function() {
@@ -90,4 +103,4 @@ io.sockets.on('connection', function (socket) {
   });
 });
 
-server.listen(3003);
+server.listen(3000);

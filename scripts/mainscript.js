@@ -24,14 +24,12 @@ var keys = {
 
 window.onload = function() {
 	$.getJSON("levels/tiled_test.json", {}, function(data) {
-		console.log(data);
 		var layers = data['layers'];
 
 		var scenery_data, collision_data;
 
 		layers.forEach(function (element) {
 			if (element.name == "scenery") {
-				console.log(element);
 				scenery_data = element;
 			} else if (element.name == "entities") {
 				element['objects'].forEach(function (obj) {
@@ -54,7 +52,7 @@ window.onload = function() {
 		Game.map.loadCollision(collision_data);
 		Game.map.add(player);
 
-		// connection.open();
+		connection.open();
 		Game.draw();
 	});
 
@@ -79,10 +77,11 @@ window.onload = function() {
 		c.fillText("map.height: " + this.map.height, 20, 60);
 		c.fillText("player.x: " + player.x, 20, 70);
 		c.fillText("player.y: " + player.y, 20, 80);
+		c.fillText("net id: " + connection.id, 20, 90);
 	});
 	Game.map = new Level('fu bar');
 
-	// connection = new Connection();
+	connection = new Connection();
 
 	$(window).resize(function() {
 		var width = $(window).width();

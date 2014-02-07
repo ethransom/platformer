@@ -3,6 +3,14 @@ Player.prototype = new Unit();
 Player.prototype.constructor = Player;
 
 function Player(x, y, w, h) {
+	this.image = new Image();
+	this.img_loaded = false;
+	var that = this;
+	this.image.onload = function () {
+		that.img_loaded = true;
+	};
+	this.image.src = 'img/player_sprite.png';
+
 	Unit.call(this);
 	this.color = 'orange';
 	this.dy = 0;
@@ -117,7 +125,11 @@ Player.prototype.draw = function(dtime, c) {
 	c.translate(this.x, this.y);
 	// $('#fps').html(this.x + ", " + this.y);
 	c.fillStyle = this.color;
-	c.fillRect(-20, -20, 40, 40);
+	if (this.img_loaded) {
+		c.drawImage(this.image, -20, -20);
+	} else {
+		c.fillRect(-20, -20, 40, 40);
+	}
 	c.restore();
 
 	this.updateServer(dtime);
@@ -134,8 +146,8 @@ var __lastUpdateBuildup = 0;
 Player.prototype.updateServer = function(dtime) {
 	__lastUpdateBuildup += dtime;
 
-	if (__lastUpdateBuildup > 0.250) {
-		// connection.sendUpdate(this.x, this.y);
+	if (__lastUpdateBuildup > 0.100) {
+		connection.sendUpdate(this.x, this.y);
 		__lastUpdateBuildup = 0;
 	}
 }

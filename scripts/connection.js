@@ -7,11 +7,19 @@ function Connection() {
 	var last_x = null, last_y = null;
 
 	this.open = function() {
-		socket = io.connect('http://localhost:3000');
+		socket = io.connect('/');
 
 		socket.on('new_connection', function (data) {
-			console.log("New player: ", data.id);
-			Game.ghosts[data.id] = new Ghost(data.id);
+			console.log(data);
+			if (Game.ghosts.hasOwnProperty(data.id)) {
+				console.log("Tried to add duplicate player: " + data.id);
+			} else {
+				console.log("New player: '" + data.id + "' (" + data.x + "," + data.y + ")");
+				var g = new Ghost(data.id);
+				g.x = parseFloat(data.x);
+				g.y = parseFloat(data.y);
+				Game.ghosts[data.id] = g;
+			}
 		});
 
 		socket.on('connection_lost', function (data) {
@@ -39,7 +47,12 @@ function Connection() {
 		socket.on('update', function (data) {
 			console.log(data.id + " moved to " + data.x + ", " + data.y);
 			try {
-				Game.ghosts[data.id].move(parseFloat(data.x), parseFloat(data.y));
+				if (Game.ghosts.hasOwnProperty(data.id))
+					Game.ghosts[data.id].move(parseFloat(data.x), parseFloat(data.y));
+				else {
+					console.log("moved non-existant ghost ", data.id);
+					throw "error";
+				}
 			} catch (e) {
 				console.log("Recieving updates for: " + data.id + " incorrectly");
 			}
@@ -48,7 +61,7 @@ function Connection() {
 
 	this.sendUpdate = function (x, y) {
 		if (this.is_open 
-			&& (x != last_x || y != last_y)) // don't spam the server
+			&& (Math.round(x) != Math.round(last_x) || Math.round(y) != Math.round(last_y))) // don't spam the server
 		{
 			socket.emit('update!', {'x': x, 'y': y});
 		}
