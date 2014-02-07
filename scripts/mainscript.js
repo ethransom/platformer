@@ -1,6 +1,8 @@
 var Game = null;
 var connection = null;
 var player = null;
+var chat = [];
+var coins = [];
 
 var keys = {
 	down: function(e) {
@@ -8,6 +10,7 @@ var keys = {
 		if (e == 37) keys.left = true; //left
 		if (e == 39) keys.right = true; //right
 		if (e == 32) $.go('jump'); //space
+		if (e === 191) $.go('get_chat');
 
 		//dudemove=true;
 	},
@@ -65,7 +68,7 @@ window.onload = function() {
 	foo.width = w;
 	foo.height = h;
 	Game = new Ninja.Game(w, h);
-	Game.on('draw', function (dtime, c) {
+	Game.on('uidraw', function (dtime, c) {
 		c.fillStyle = 'black';
 		c.font = 10 + "px monospace";
 		c.textBaseline = 'hanging';
@@ -78,6 +81,18 @@ window.onload = function() {
 		c.fillText("player.x: " + player.x, 20, 70);
 		c.fillText("player.y: " + player.y, 20, 80);
 		c.fillText("net id: " + connection.id, 20, 90);
+
+		c.fillStyle = 'black';
+		c.font = 10 + "px monospace";
+		c.textBaseline = 'hanging';
+		for (var i = 0; i < chat.length && i < 8; i++) {
+			c.fillText(chat[i], 20, 110 + (10 * i));
+		}
+	});
+	Game.on('draw', function (dtime, c) {
+		coins.forEach(function (e) {
+			e.draw(dtime, c);
+		});
 	});
 	Game.map = new Level('fu bar');
 

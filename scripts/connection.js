@@ -30,12 +30,38 @@ function Connection() {
 			console.log("Updating stats for " + data.id);
 			if (Game.ghosts.hasOwnProperty(data.id))
 				Game.ghosts[data.id].update(data);
-		})
+			else if (this.id === data.id) {
+				player.update(data);
+			}
+		});
+
+		socket.on('create_coin!', function (data) {
+			coins.push(new Coin(data.r, data.c));
+		});
+
+		socket.on('delete_coin!', function (data) {
+			coins.forEach(function (e, i, arr) {
+				if (e.r === data.r && e.c === data.c) {
+					arr.splice(i, 1);
+				}
+			});
+		});
+
+		$.on('get_chat', function () {
+			var msg = prompt("What say you? ");
+			if (msg != null || msg == "")
+				socket.emit('chat_submit', {'msg': msg});
+		});
+
+		socket.on('chat_forward', function (data) {
+			console.log("Got message: ", data.msg);
+			chat.unshift(data.msg);
+		});
 
 		socket.on('connection_lost', function (data) {
 			console.log("Player left: ", data.id);
 			delete Game.ghosts[data.id];
-		})
+		});
 
 		socket.on('connection_successful', function (data) {
 			that.id = data.id; // cache our id TODO: ignore updates with this id?

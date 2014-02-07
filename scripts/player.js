@@ -39,6 +39,11 @@ function Player(x, y, w, h) {
 	});
 }
 
+Player.prototype.update = function (data) {
+	this.name = data.name;
+	this.color = data.color;
+};
+
 Player.prototype.draw = function(dtime, c) {
 	var old = {
 		x: this.x,
@@ -140,10 +145,10 @@ Player.prototype.draw = function(dtime, c) {
 }
 
 Player.prototype.jump = function() {
-	if (!this.airborne && !this.jumping && !this.falling) {
+	// if (!this.airborne && !this.jumping && !this.falling) {
 		this.jumping = true;
 		this.dy = this.thrust;
-	}
+	// }
 };
 
 var __lastUpdateBuildup = 0;
