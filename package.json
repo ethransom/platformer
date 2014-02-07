@@ -1,6 +1,8 @@
 {
   "name": "Platformer",
   "version": "0.0.1",
+  "description": "It's a game with colored boxes!!!!! ZOMG!",
+  "main": "app.js",
   "dependencies": {
     "socket.io": "0.9.16",
     "express": "3.4.4"
