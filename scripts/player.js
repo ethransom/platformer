@@ -13,6 +13,7 @@ function Player(x, y, w, h) {
 
 	Unit.call(this);
 	this.color = 'orange';
+	this.name = prompt("Enter a name: ");
 	this.dy = 0;
 	this.x = x;
 	this.y = y;
@@ -24,9 +25,8 @@ function Player(x, y, w, h) {
 	this.maxfall = 64;
 
 	var that = this;
-	$.on('playing', function () {
-		console.log("purpling player");
-		that.color = 'purple';
+	$.on('playing', function (stuff) {
+		console.log(stuff + " ing player");
 	});
 
 	$.on('spectating', function () {
@@ -123,13 +123,17 @@ Player.prototype.draw = function(dtime, c) {
 	if (this.hidden) return;
 	c.save();
 	c.translate(this.x, this.y);
-	// $('#fps').html(this.x + ", " + this.y);
 	c.fillStyle = this.color;
-	if (this.img_loaded) {
-		c.drawImage(this.image, -20, -20);
-	} else {
 		c.fillRect(-20, -20, 40, 40);
-	}
+
+		// draw name
+		c.font = 10 + "px monospace";
+		c.fillStyle = 'black';
+		var width = c.measureText(this.name).width;
+		c.fillRect(-0.5 * width - 5, -45, width + 10, 20);
+		c.fillStyle = 'white';
+		c.textBaseline = 'hanging';
+		c.fillText(this.name, -0.5 * width, -40);
 	c.restore();
 
 	this.updateServer(dtime);
@@ -146,7 +150,7 @@ var __lastUpdateBuildup = 0;
 Player.prototype.updateServer = function(dtime) {
 	__lastUpdateBuildup += dtime;
 
-	if (__lastUpdateBuildup > 0.100) {
+	if (__lastUpdateBuildup > 0.050) {
 		connection.sendUpdate(this.x, this.y);
 		__lastUpdateBuildup = 0;
 	}

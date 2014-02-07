@@ -32,6 +32,16 @@ function User(manager, id) {
   this.manager = manager;
   this.playing = false;
 
+  this.color = 'rgb(' 
+                + Math.floor(Math.random() * 255) 
+                + ',' 
+                + Math.floor(Math.random() * 255)
+                + ','
+                + Math.floor(Math.random() * 255)
+                + ')';
+
+  this.name = 'box';
+
   this.x = 0;
   this.y = 0;
 
@@ -47,7 +57,23 @@ function User(manager, id) {
       (Math.round(this.x) != Math.round(x)) ||
       (Math.round(this.y) != Math.round(y))
     );
-  }
+  };
+
+  this.set_name = function (name) {
+    if (typeof name == "undefined") {
+      this.name = '#error'
+    } else {
+      this.name = name;
+    }
+  };
+
+  this.info = function () {
+    return {
+      'color': this.color,
+      'name': this.name,
+      'id': this.id
+    };
+  };
 };
 
 var manager = new PlayerManager(40);
@@ -55,12 +81,13 @@ var manager = new PlayerManager(40);
 var players = {};
 
 io.sockets.on('connection', function (socket) {
-  socket.broadcast.emit('new_connection', {'id': socket.id});
-  socket.emit('connection_successful', {'id': socket.id});
-  console.log("New player! ID: ", socket.id);
-
   var user = new User(manager, socket.id);
   players[user.id] = user;
+
+  socket.broadcast.emit('new_connection', {'id': socket.id, 'color': user.color});
+  socket.broadcast.emit('update_stats', user.info());
+  socket.emit('connection_successful', {'id': socket.id});
+  console.log("New player! ID: " + socket.id + " COLOR: " + user.color);
 
   // fill the user in on other players
   for (var key in players) {
@@ -70,16 +97,20 @@ io.sockets.on('connection', function (socket) {
       socket.emit('new_connection', {
         'id': players[key].id,
         'x': players[key].x,
-        'y': players[key].y
+        'y': players[key].y,
+        'color': players[key].color,
+        'name': players[key].name
       });
     }
   }
 
   socket.on('play!', function (data) {
+    user.set_name(data.name);
     console.log("Request to play from " + socket.id);
     if (manager.accept(user)) {
       console.log("...request accepted");
-      socket.emit('play_accepted');
+      socket.emit('play_accepted', {'color': user.color});
+      socket.broadcast.emit('update_stats', user.info());
     } else {
       console.log("...server full");
       socket.emit('play_denied');
@@ -100,7 +131,8 @@ io.sockets.on('connection', function (socket) {
   socket.on('disconnect', function() {
     console.log("lost connection: ", socket.id);
     socket.broadcast.emit('connection_lost', {'id': socket.id});
+    delete players[socket.id];
   });
 });
 
-server.listen(3000);
+server.listen(process.env.PORT || 3000);
