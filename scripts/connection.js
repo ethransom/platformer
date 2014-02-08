@@ -9,19 +9,19 @@ function Connection() {
 	this.open = function() {
 		socket = io.connect('/');
 
-		socket.on('new_connection', function (data) {
+		socket.on('create_ghost!', function (data) {
 			console.log(data);
 			if (Game.ghosts.hasOwnProperty(data.id)) {
 				console.log("Tried to add duplicate player: " + data.id);
+			} else if (player.id === data.id) {
+				console.log("Tried to ghost self");
 			} else {
 				console.log("New player: '" + data.id + "' (" + data.name + ") (" + data.x + "," + data.y + ")");
 				var g = new Ghost(data.id);
 				g.x = parseFloat(data.x);
 				g.y = parseFloat(data.y);
+				g.name = data.name;
 				g.color = data.color;
-				if (data.hasOwnProperty('name')) {
-					g.name = data.name;
-				}
 				Game.ghosts[data.id] = g;
 			}
 		});
@@ -32,6 +32,9 @@ function Connection() {
 				Game.ghosts[data.id].update(data);
 			else if (this.id === data.id) {
 				player.update(data);
+			} else {
+				console.log("unorthodox add of ", data.id);
+
 			}
 		});
 
@@ -53,6 +56,11 @@ function Connection() {
 				socket.emit('chat_submit', {'msg': msg});
 		});
 
+		$.on('level_switch', function (e, name) {
+			console.log(name);
+			socket.emit('play!', {'room': name});
+		});
+
 		socket.on('chat_forward', function (data) {
 			console.log("Got message: ", data.msg);
 			chat.unshift(data.msg);
@@ -63,11 +71,16 @@ function Connection() {
 			delete Game.ghosts[data.id];
 		});
 
+		socket.on('delete_ghost!', function (data) {
+			console.log("Player left: ", data.id);
+			delete Game.ghosts[data.id];
+		});
+
 		socket.on('connection_successful', function (data) {
 			that.id = data.id; // cache our id TODO: ignore updates with this id?
 			console.log("Connection successful!! ID: " + that.id);
 			that.is_open = true;
-			socket.emit('play!', {'name': player.name});
+			socket.emit('play!', {'name': player.name, 'room': Game.current_level});
 		});
 
 		socket.on('play_accepted', function (data) {

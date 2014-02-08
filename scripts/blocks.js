@@ -37,6 +37,8 @@ function Block(x, y, w, h) {
 	this.sprite_code = 1;
 	this.color = 'purple';
 	this.walkable = false;
+
+	this.teleport = null;
 }
 Block.prototype.draw = function(c) {
 	if (this.hidden) return;

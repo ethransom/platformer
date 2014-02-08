@@ -2,7 +2,8 @@
 Player.prototype = new Unit();
 Player.prototype.constructor = Player;
 
-function Player(x, y, w, h) {
+function Player() {
+	console.log("new player");
 	this.image = new Image();
 	this.img_loaded = false;
 	var that = this;
@@ -15,8 +16,8 @@ function Player(x, y, w, h) {
 	this.color = 'orange';
 	this.name = prompt("Enter a name: ");
 	this.dy = 0;
-	this.x = x;
-	this.y = y;
+	this.x = 0;
+	this.y = 0;
 	this.w = 40;
 	this.h = 40;
 	this.gravity = 1000;
@@ -45,6 +46,13 @@ Player.prototype.update = function (data) {
 };
 
 Player.prototype.draw = function(dtime, c) {
+	// check for teleports!
+	var teleport = Game.map.loc(this.x, this.y).teleport;
+	if (teleport != null) {
+		console.log("Teleporting to: ", teleport);
+		switch_to_room(teleport);
+	}
+
 	var old = {
 		x: this.x,
 		y: this.y
@@ -145,17 +153,17 @@ Player.prototype.draw = function(dtime, c) {
 }
 
 Player.prototype.jump = function() {
-	// if (!this.airborne && !this.jumping && !this.falling) {
+	if (!this.airborne && !this.jumping && !this.falling) {
 		this.jumping = true;
 		this.dy = this.thrust;
-	// }
+	}
 };
 
 var __lastUpdateBuildup = 0;
 Player.prototype.updateServer = function(dtime) {
 	__lastUpdateBuildup += dtime;
 
-	if (__lastUpdateBuildup > 0.050) {
+	if (__lastUpdateBuildup > 0.010) {
 		connection.sendUpdate(this.x, this.y);
 		__lastUpdateBuildup = 0;
 	}

@@ -25,7 +25,11 @@ Level.prototype.loc = function(x, y) {
 	try {
 		var loc = this.rows[c][r];
 		return loc;
-	} catch (e) {}
+	} catch (e) {
+		var b = new Block(null, null, null, null);
+		b.walkable = true;
+		return b;
+	}
 };
 
 Level.prototype.load = function(data) {
@@ -35,11 +39,13 @@ Level.prototype.load = function(data) {
 
 	this.rows = new Array(this.h);
 
+	var i = 0;
 	for (var r = 0; r < this.h; r++) {
 		this.rows[r] = new Array(this.w);
 		for (var c = 0; c < this.w; c++) {
 			var me = 1;
-			me = this.data.shift();
+			me = data.data[i];
+			i += 1;
 			this.rows[r][c] = Block.from_sprite_code(me - 1, c * this.blockwidth, r * this.blockheight, this.blockwidth, this.blockheight);
 		}
 	}
@@ -50,13 +56,25 @@ Level.prototype.load = function(data) {
 	this.height = this.rows.length * this.blockheight;
 };
 
+Level.prototype.load_portals = function (portals) {
+	var that = this;
+	portals.forEach(function (e) {
+		var c = parseInt(e.x) / that.blockheight;
+		var r = parseInt(e.y) / that.blockwidth;
+		console.log("making teleport", that.rows, r, c);
+		that.rows[r][c].teleport = e.type;
+	});
+}
+
 Level.prototype.loadCollision = function(data) {
 	var d = data.data;
 
+	var i = 0;
 	for (var r = 0; r < data.height; r++) {
 		for (var c = 0; c < data.width; c++) {
 			var me = -1;
-			me = d.shift();
+			me = d[i];
+			i += 1;
 			this.rows[r][c].walkable = (me == 19);
 		}
 	}

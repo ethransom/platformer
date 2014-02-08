@@ -1,5 +1,6 @@
 var express = require('express');
 var app = express();
+var server = new (require('./server'))();
 
 app.get('/', function (req, res) {
   res.sendfile(__dirname + '/index.html');
@@ -10,28 +11,23 @@ app.use('/levels', express.static(__dirname + '/levels'));
 app.use('/ninja', express.static(__dirname + '/ninja'));
 app.use('/img', express.static(__dirname + '/img'));
 
-var server = require('http').Server(app);
-var io = require('socket.io').listen(server);
+var fs = require('fs');
 
-function PlayerManager(capacity) {
-  this.players = 0;
-  this.capacity = capacity;
+app.get('/level_list.json', function (req, res) {
+  var levels = fs.readdirSync('levels');
+  res.setHeader('Content-Type', 'application/json');
+  res.send(JSON.stringify({'levels': levels, 'default': "tiled_test.json"}));
+});
 
-  this.accept = function (user) {
-    if ((this.players + 1) < this.capacity) {
-      this.players += 1;
-      user.playing = true;
-      return true;
-    } else {
-      return false;
-    }
-  };
-};
+var http = require('http').Server(app);
+var io = require('socket.io').listen(http);
 
-function User(manager, id) {
-  this.manager = manager;
+io.set('log level', 1);
+
+function User(id, socket) {
   this.playing = false;
-
+  this.room = "";
+  this.socket = socket;
   this.coins = 0;
 
   this.color = 'rgb(' 
@@ -49,6 +45,32 @@ function User(manager, id) {
 
   this.id = id;
 
+  this.set_room = function (room) {
+    if (this.room !== "") {
+      this.socket.leave(this.room);
+      this.socket.broadcast.to(this.room).emit('delete_ghost!', {'id': socket.id});
+      for (var key in players) {
+        if (players[key].id != this.id && players[key].room === this.room) {
+          this.socket.emit('delete_ghost!', {'id': players[key].id});
+        }
+      }
+    }
+    socket.join(room);
+    this.room = room;
+  };
+
+  this.inform_about = function (player) {
+    console.log("informing " + this.name + "|" + this.id + " about the presence of " + player.name);
+    this.socket.emit('update_stats', player.info());
+    this.socket.emit('create_ghost!', {
+      'id': player.id,
+      'name': player.name,
+      'color': player.color,
+      'x': player.x,
+      'y': player.y
+    });
+  }
+
   this.update = function(x, y) {
     this.x = x; 
     this.y = y;
@@ -56,8 +78,9 @@ function User(manager, id) {
 
   this.should_update = function (x, y) {
     return (
-      (Math.round(this.x) != Math.round(x)) ||
-      (Math.round(this.y) != Math.round(y))
+      ((Math.round(this.x) != Math.round(x)) ||
+      (Math.round(this.y) != Math.round(y)))
+      // this.room !== ""
     );
   };
 
@@ -77,8 +100,6 @@ function User(manager, id) {
     };
   };
 };
-
-var manager = new PlayerManager(40);
 
 var players = {};
 
@@ -123,44 +144,38 @@ function clear_coins() {
 // spawn_coins();
 
 io.sockets.on('connection', function (socket) {
-  var user = new User(manager, socket.id);
+  var user = new User(socket.id, socket);
   players[user.id] = user;
 
-  socket.broadcast.emit('new_connection', {'id': socket.id, 'color': user.color});
-  socket.broadcast.emit('update_stats', user.info());
 
   socket.emit('connection_successful', {'id': socket.id});
   console.log("New player! ID: " + socket.id + " COLOR: " + user.color);
 
   // fill the user in on coins
   coins.forEach(function (e) {
-      io.sockets.emit('create_coin!', {'r': e.r, 'c': e.c});
+    io.sockets.emit('create_coin!', {'r': e.r, 'c': e.c});
   });
 
-  // fill the user in on other players
-  for (var key in players) {
-    console.log(players[key].id == user.id);
-    if (players[key].id != user.id) {
-      console.log("updating " + user.id + " about the presence of " + players[key].id);
-      socket.emit('new_connection', {
-        'id': players[key].id,
-        'x': players[key].x,
-        'y': players[key].y,
-        'color': players[key].color,
-        'name': players[key].name
-      });
-    }
-  }
 
   socket.on('play!', function (data) {
-    user.set_name(data.name);
-    console.log("Request to play from " + socket.id);
-    if (manager.accept(user)) {
-      console.log("...request accepted");
+    if (data.name != null)
+      user.set_name(data.name);
+    if (true) {
+      // fill the user in on other players
+      for (var key in players) {
+        console.log("comparing rooms", players[key].room, data.room);
+        if (players[key].id != user.id && players[key].room === data.room) {
+          user.inform_about(players[key]);
+        }
+      }
+      console.log("Putting " + socket.id + " into room " + data.room);
       socket.emit('play_accepted', {'color': user.color});
-      socket.broadcast.emit('update_stats', user.info());
+      user.set_room(data.room);
+      socket.broadcast.to(user.room).emit('create_ghost!', {'id': user.id});
+      socket.broadcast.to(user.room).emit('update_stats', user.info());
+      socket.broadcast.to(user.room).emit('update', {'x': data.x, 'y': data.y, 'id': socket.id});
     } else {
-      console.log("...server full");
+      console.log("Denied request to play from " + socket.id);
       socket.emit('play_denied');
     }
   });
@@ -178,7 +193,7 @@ io.sockets.on('connection', function (socket) {
       clear_coins();
       return;
     }
-    if (data.msg.split(' ')[0] === "#name") {
+    if (data.msg.split(' ')[0] == "#name") {
       announce("TWERKS!");
       var name = data.msg.split(' ')[1];
       if (name == "" || name == null) {
@@ -190,14 +205,14 @@ io.sockets.on('connection', function (socket) {
     }
 
     var packet = {'msg': '[' + user.name + '] ' + data.msg};
-    socket.broadcast.emit('chat_forward', packet);
-    socket.emit('chat_forward', packet);
+    io.sockets.emit('chat_forward', packet);
   });
 
   socket.on('update!', function(data) {
     if (user.should_update(data.x, data.y)) {
+      console.log("update", user.room, socket.id, data.x, data.y);
       user.update(data.x, data.y);
-      socket.broadcast.emit('update', {'x': data.x, 'y': data.y, 'id': socket.id});
+      socket.broadcast.to(user.room).emit('update', {'x': data.x, 'y': data.y, 'id': socket.id});
     }
   });
 
@@ -216,7 +231,7 @@ function distance(x1, y1, x2, y2) {
   return Math.sqrt(Math.pow(x1 - x2, 2) + Math.pow(y1 - y2, 2));
 };
 
-setInterval(function () {
+server.on('tick', function () {
   for (var key in players) {
     coins.forEach(function (e, i, arr) {
       if (distance(players[key].x, players[key].y, e.x, e.y) < 40) {
@@ -227,6 +242,6 @@ setInterval(function () {
       }
     });
   }
-}, 100);
+});
 
-server.listen(process.env.PORT || 3000);
+http.listen(process.env.PORT || 3000);

@@ -1,7 +1,7 @@
 function Ghost(id) {
 	// console.log("new ghost", id);
 	Ninja.Sprite.call(this);
-	this.color = 'black';
+	this.color = '#c3c3c3';
 	this.id = id;
 	this.name = "";
 }
