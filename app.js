@@ -239,4 +239,6 @@ server.on('tick', function () {
   }
 });
 
-http.listen(process.env.PORT || 3000);
+var port = process.env.PORT || 3000;
+console.log("Listening on port ", port);
+http.listen(port);
