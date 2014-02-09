@@ -77,11 +77,7 @@ function User(id, socket) {
   };
 
   this.should_update = function (x, y) {
-    return (
-      ((Math.round(this.x) != Math.round(x)) ||
-      (Math.round(this.y) != Math.round(y)))
-      // this.room !== ""
-    );
+    return (true);
   };
 
   this.set_name = function (name) {
@@ -210,7 +206,6 @@ io.sockets.on('connection', function (socket) {
 
   socket.on('update!', function(data) {
     if (user.should_update(data.x, data.y)) {
-      console.log("update", user.room, socket.id, data.x, data.y);
       user.update(data.x, data.y);
       socket.broadcast.to(user.room).emit('update', {'x': data.x, 'y': data.y, 'id': socket.id});
     }
