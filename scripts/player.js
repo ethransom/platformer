@@ -3,7 +3,6 @@ Player.prototype = new Unit();
 Player.prototype.constructor = Player;
 
 function Player() {
-	console.log("new player");
 	this.image = new Image();
 	this.img_loaded = false;
 	var that = this;
@@ -25,10 +24,9 @@ function Player() {
 	this.thrust = -600;
 	this.maxfall = 64;
 
+	this.score = 0;
+
 	var that = this;
-	$.on('playing', function (stuff) {
-		console.log(stuff + " ing player");
-	});
 
 	$.on('spectating', function () {
 		console.log("greying player");
@@ -50,7 +48,7 @@ Player.prototype.draw = function(dtime, c) {
 	var teleport = Game.map.loc(this.x, this.y).teleport;
 	if (teleport != null) {
 		console.log("Teleporting to: ", teleport);
-		switch_to_room(teleport);
+		$.go('room_switch', teleport);
 	}
 
 	var old = {

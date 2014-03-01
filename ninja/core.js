@@ -1,7 +1,12 @@
 var Ninja = {};
 
 // MIXINS!
-Ninja.Base = function () {};
+Ninja.Base = function () {
+	this.children = [];
+	this.add = function (i) {
+		this.children.push(i);
+	};
+};
 Ninja.Base.prototype.use = function (mixin) {
 	_.extend(this, mixin);
 	
@@ -25,5 +30,21 @@ Ninja.toDeg = function (rad) {
 };
 
 Ninja.distance = function (x1, y1, x2, y2) {
-	return Math.sqrt(Math.pow(x1 - x2, 2) + Math.pow(y1 - y2, 2));
+	return Math.sqrt(Math.pow(x2 - x1, 2) + Math.pow(y2 - y1, 2));
 };
+
+Ninja.requestAnimFrame = (function (fn) {
+	(function(){
+	  return  window.requestAnimationFrame       ||
+	          window.webkitRequestAnimationFrame ||
+	          window.mozRequestAnimationFrame    ||
+	          function( callback ){
+	            window.setTimeout(callback, 0);
+	          };
+	})(fn);
+});
+
+
+  // function distance(x1, y1, x2, y2) {
+    // return Math.sqrt(Math.pow(x1 - x2, 2) + Math.pow(y1 - y2, 2));
+  // };

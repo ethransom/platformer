@@ -1,6 +1,5 @@
 
 Ninja.Sprite = function () {
-
 };
 
 Ninja.Sprite.prototype = new Ninja.Base();

@@ -2,15 +2,17 @@ Ninja.SpriteSheet = function (url, tile_width, tile_height) {
 	var w = 0;
 	var h = 0;
 
-	var tileSprites = new Image();
-	this.loaded = false;
-	tileSprites.onload = function () {
-		this.loaded = true;
+	if (typeof window != 'undefined') {
+		this.tileSprites = new Image();
+		this.loaded = false;
+		this.tileSprites.onload = function () {
+			this.loaded = true;
 
-		w = this.width / tile_width;
-		h = this.height / tile_height;
+			w = this.width / tile_width;
+			h = this.height / tile_height;
+		};
+		this.tileSprites.src = url;
 	}
-	tileSprites.src = url;
 
 	this.tile_width = tile_width;
 	this.tile_height = tile_height;
@@ -27,7 +29,7 @@ Ninja.SpriteSheet = function (url, tile_width, tile_height) {
 	this.draw_snip = function(ctx, num) {
 		try {
 			var coords = this.calculate_coords(num);
-			ctx.drawImage(tileSprites, 
+			ctx.drawImage(this.tileSprites, 
 						coords[0],
 						coords[1],
 						64, 64,

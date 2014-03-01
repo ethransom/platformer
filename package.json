@@ -1,5 +1,5 @@
 {
-  "name": "Platformer",
+  "name": "platformer",
   "version": "0.0.1",
   "description": "It's a game with colored boxes!!!!! ZOMG!",
   "main": "app.js",

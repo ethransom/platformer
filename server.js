@@ -8,7 +8,7 @@ function Server() {
   	var that = this;
 	setInterval(function () {
 	  that.emit('tick');
-	}, 100);
+	}, 1000 / 60);
   };
 }
 

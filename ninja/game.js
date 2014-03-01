@@ -54,9 +54,11 @@
 
 			this.trigger('draw', dtime, c);
 
-			// for (var i = 0; i < this.ghosts.length; i++) {
-			// 	this.ghosts[i].draw(dtime, c);
-			// }
+			var that = this;
+			this.children.forEach(function (e) {
+				e.draw(c);
+			})
+
 			for (var key in this.ghosts) {
 				this.ghosts[key].draw(dtime, c);
 			}
