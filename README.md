@@ -2,6 +2,10 @@
 
 A little bouncy box game. There's literally no game design. Just code. :) 
 
+![multiplayer gameplay screenshot](screenshot.png)
+
+![gameplay screenshot demoing coin collection](screenshot_coins.png)
+
 # Installation  
 
 Clone the git repo, if you haven't already.
