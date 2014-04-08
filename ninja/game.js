@@ -67,7 +67,7 @@
 
 			this.trigger('uidraw', dtime, c);
 
-			if (!this.paused) setTimeout('Game.draw()', 0);
+			if (!this.paused) requestAnimationFrame(this.draw);
 		};
 
 		this.add = function (child) {
