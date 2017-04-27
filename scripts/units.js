@@ -90,18 +90,18 @@ Unit.prototype.checkCorners = function(nx, ny) {
 };
 
 //import basic unit properties and methods
-Blob.prototype = new Unit;
-Blob.prototype.constructor = Blob;
+// Blob.prototype = new Unit;
+// Blob.prototype.constructor = Blob;
 
-function Blob(x, y, w, h) {
-	Unit.call(this);
-	this.dirx = 1;
-	this.color = 'red';
-	this.speed = 50;
-	this.x = x;
-	this.y = y;
-	this.w = 40;
-	this.h = 40;
-	this.dy = 0;
-	this.gravity = 5;
-}
+// function Blob(x, y, w, h) {
+// 	Unit.call(this);
+// 	this.dirx = 1;
+// 	this.color = 'red';
+// 	this.speed = 50;
+// 	this.x = x;
+// 	this.y = y;
+// 	this.w = 40;
+// 	this.h = 40;
+// 	this.dy = 0;
+// 	this.gravity = 5;
+// }

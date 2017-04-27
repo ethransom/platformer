@@ -17,7 +17,7 @@ app.get('/', function (req, res) {
   res.sendfile(__dirname + '/index.html');
 });
 
-app.use('/scripts', express.static(__dirname + '/scripts'));
+app.use('/scripts', express.static(__dirname + '/built'));
 app.use('/levels', express.static(__dirname + '/levels'));
 app.use('/ninja', express.static(__dirname + '/ninja'));
 app.use('/img', express.static(__dirname + '/img'));
